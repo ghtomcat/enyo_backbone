@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Todos</title>
+	<!-- -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<!-- -->
+	<script src="../enyo-2.0b5/enyo-2.0b5/enyo.js" type="text/javascript"></script>
+	<script src="../enyo-2.0b5/lib/onyx/package.js" type="text/javascript"></script>
+	<script src="../enyo-2.0b5/lib/layout/package.js" type="text/javascript"></script>
+
+	<script src="dist/underscore.js" type="text/javascript"></script>
+	<script src="dist/backbone.js" type="text/javascript"></script>
+	<script src="dist/backbone.localStorage.js" type="text/javascript"></script>
+
+	<!-- -->
+	<style>
+	</style>
+</head>
+<body>
+	<script>
+
+
+	// Todo
+  var Todo = Backbone.Model.extend({
+  
+    toggle: function() {
+      this.save({done: !this.get("done")});
+    },
+
+    // Remove this Todo from *localStorage*, deleting its view.
+    clear: function() {
+      this.destroy();
+    }
+  
+  });
+
+  // Todo List
+  var TodoList = Backbone.Collection.extend({
+  
+    model: Todo,
+    localStorage: new Store("todos"),
+  
+    // Returns all done todos.
+    done: function() {
+      return this.filter(function(todo){
+        return todo.get('done');
+      });
+    },
+
+    // Filter down the list to only todo items that are still not finished.
+    remaining: function() {
+      return this.without.apply(this, this.done());
+    },
+
+    nextOrder: function() {
+      if (!this.length) return 1;
+      return this.last().get('order') + 1;
+    },
+
+    comparator: function(todo) {
+      return todo.get('order');
+    },
+
+    pluralize: function(count) {
+      return count == 1 ? 'item' : 'items';
+    }
+  
+  });
+
+  var Todos = new TodoList;
+
+		enyo.kind({
+			name: "App",
+			components: [
+				{kind: "FittableRows", components: [
+					{kind: "onyx.Toolbar", components: [
+						{content: "Todos"},
+					]},
+					{kind: "onyx.InputDecorator", components: [
+    					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"},
+  					]},
+					{kind: "Scroller", fit: true, components: [
+        				{kind: "Repeater", name: "todoList", count: 10, onSetupItem: "setupItem", components: [
+            				{name: "item", classes: "item", components: [
+            					{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
+                				{kind:"onyx.Input", name: "input", onchange: "inputChange"}
+            				]},
+        				]},
+    				]},
+    				
+				]},
+			],
+			create: function() {
+				Todos.fetch(); // fetch needs to be called before anyone can access the data ... is there a better place than here?
+				enyo.log(JSON.stringify(Todos));
+
+				this.inherited(arguments);
+
+			},
+			rendered: function() {
+				this.inherited(arguments);
+
+				//enyo.log(Todos.done().length); // example how to call collection functions
+      			//enyo.log(Todos.remaining().length); // example how to call collection functions
+
+			},
+			setupItem: function(inSender, inEvent) {
+				if (Todos.at(inEvent.index)) {
+					inEvent.item.$.input.setValue(Todos.at(inEvent.index).get("content")); // get value from model and update repeater item
+					inEvent.item.$.isDone.setValue(Todos.at(inEvent.index).get("done")); // get value from model and update repeater item
+				}
+			},
+			addOnEnter: function(inSender,inEvent) {
+				if (inEvent.keyCode === 13) {
+    					this.addTodo();
+    				return true;
+  				}
+  			},
+			addTodo: function() {
+				Todos.create({ // create new model and add to collection
+        			content: this.$.newTodo.hasNode().value,
+        			done:    false
+      			});
+      			this.$.todoList.setCount(10); // setCount refreshes the Repeater
+      			this.$.newTodo.setValue(""); // clear the input field
+      		},
+      		inputChange: function(inSender,inEvent) {
+      			Todos.at(inEvent.index).save({"content": inSender.getValue()}); // update the content attribute in the model at index
+      		},
+      		doneChange: function(inSender,inEvent) {
+				Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
+      		}
+		});
+
+		new App({fit: true, classes: "enyo-unselectable"}).write();
+
+	</script>
+</body>
+</html>
