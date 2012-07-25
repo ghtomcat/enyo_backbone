@@ -10,6 +10,10 @@
 	<script src="../enyo-2.0b5/lib/onyx/package.js" type="text/javascript"></script>
 	<script src="../enyo-2.0b5/lib/layout/package.js" type="text/javascript"></script>
 
+	<!--<script src="../../../../enyojs/enyo/enyo.js" type="text/javascript"></script>-->
+	<!--<script src="../../../../enyojs/lib/onyx/package.js" type="text/javascript"></script>-->
+	<!--<script src="../../../../enyojs/lib/layout/package.js" type="text/javascript"></script>-->
+
 	<script src="dist/underscore.js" type="text/javascript"></script>
 	<script src="dist/backbone.js" type="text/javascript"></script>
 	<script src="dist/backbone.localStorage.js" type="text/javascript"></script>
@@ -71,67 +75,73 @@
 
   var Todos = new TodoList;
 
-		enyo.kind({
-			name: "App",
-			components: [
-				{kind: "FittableRows", components: [
-					{kind: "onyx.Toolbar", components: [
-						{content: "Todos"},
-					]},
-					{kind: "onyx.InputDecorator", components: [
-    					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"},
-  					]},
-					{kind: "Scroller", components: [
-        				{kind: "Repeater", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
-            				{name: "item", classes: "item", components: [
-            					{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
-                				{kind:"onyx.Input", name: "input", onchange: "inputChange"}
-            				]},
-        				]},
-    				]},
-    				
+	enyo.kind({
+		name: "App",
+		components: [
+			{kind: "FittableRows", components: [
+				{kind: "onyx.Toolbar", components: [
+					{content: "Todos"}
 				]},
-			],
-			rendered: function() {
-			    Todos.fetch();
-			    this.$.todoList.setCount(Todos.length);
-				this.inherited(arguments);
-				//enyo.log(Todos.done().length); // example how to call collection functions
-      			//enyo.log(Todos.remaining().length); // example how to call collection functions
+				{kind: "onyx.InputDecorator", components: [
+					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
+				]},
+				{kind: "Scroller", components: [
+					{kind: "Repeater", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
+						{name: "item", classes: "item", components: [
+							{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
+							{kind:"onyx.Input", name: "input", onchange: "inputChange"},
+							{kind: "onyx.IconButton", src: "assets/toolbar-icon-delete.png", ontap: "deleteItem"}
+						]}
+					]}
+				]}
+			]}
+		],
+		rendered: function() {
+			Todos.fetch();
+			this.$.todoList.setCount(Todos.length);
+			this.inherited(arguments);
+			//enyo.log(Todos.done().length); // example how to call collection functions
+					//enyo.log(Todos.remaining().length); // example how to call collection functions
 
-			},
-			setupItem: function(inSender, inEvent) {
-				if (Todos.at(inEvent.index)) {
-					inEvent.item.$.input.setValue(Todos.at(inEvent.index).get("content")); // get value from model and update repeater item
-					inEvent.item.$.isDone.setValue(Todos.at(inEvent.index).get("done")); // get value from model and update repeater item
-				}
-			},
-			addOnEnter: function(inSender,inEvent) {
-				if (inEvent.keyCode === 13) {
-    					this.addTodo();
-    				return true;
-  				}
-  			},
-			addTodo: function() {
-			    if(!this.$.newTodo.getValue()) {
-			      return; // empty string
-			    }
-				Todos.create({ // create new model and add to collection
-        			content: this.$.newTodo.getValue(),
-        			done:    false
-      			});
-      			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
-      			this.$.newTodo.setValue(""); // clear the input field
-      		},
-      		inputChange: function(inSender,inEvent) {
-      			Todos.at(inEvent.index).save({"content": inSender.getValue()}); // update the content attribute in the model at index
-      		},
-      		doneChange: function(inSender,inEvent) {
-				Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
-      		}
-		});
+		},
+		setupItem: function(inSender, inEvent) {
+			if (Todos.at(inEvent.index)) {
+				inEvent.item.$.input.setValue(Todos.at(inEvent.index).get("content")); // get value from model and update repeater item
+				inEvent.item.$.isDone.setValue(Todos.at(inEvent.index).get("done")); // get value from model and update repeater item
+			}
+		},
+		addOnEnter: function(inSender, inEvent) {
+			if (inEvent.keyCode === 13) {
+				this.addTodo(inSender.getValue());
+				inSender.setValue(""); // clear the input field
+				return true;
+			}
+		},
+		addTodo: function(value) {
+			if(!value) {
+				return; // empty string
+			}
+			Todos.create({ // create new model and add to collection
+				content: value,
+				done:    false
+			});
+			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
+		},
+		inputChange: function(inSender, inEvent) {
+			Todos.at(inEvent.index).save({"content": inSender.getValue()}); // update the content attribute in the model at index
+		},
+		doneChange: function(inSender, inEvent) {
+			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
+		},
+		deleteItem: function(inSender, inEvent) {
+			var model = Todos.at(inEvent.index);
+			model.destroy();
+			Todos.remove(model);
+			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
+		}
+	});
 
-		new App({fit: true, classes: "enyo-unselectable"}).write();
+	new App({fit: true, classes: "enyo-unselectable"}).write();
 
 	</script>
 </body>
