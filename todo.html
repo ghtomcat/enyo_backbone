@@ -83,7 +83,7 @@
 					{content: "Todos"}
 				]},
 				{kind: "onyx.InputDecorator", components: [
-					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"},
+					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
 				]},
 				{kind: "Scroller", components: [
 					{kind: "Repeater", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
@@ -109,27 +109,27 @@
 				inEvent.item.$.isDone.setValue(Todos.at(inEvent.index).get("done")); // get value from model and update repeater item
 			}
 		},
-		addOnEnter: function(inSender,inEvent) {
+		addOnEnter: function(inSender, inEvent) {
 			if (inEvent.keyCode === 13) {
-				this.addTodo();
+				this.addTodo(inSender.getValue());
+				inSender.setValue(""); // clear the input field
 				return true;
 			}
 		},
-		addTodo: function() {
-			if(!this.$.newTodo.getValue()) {
+		addTodo: function(value) {
+			if(!value) {
 				return; // empty string
 			}
 			Todos.create({ // create new model and add to collection
-				content: this.$.newTodo.getValue(),
+				content: value,
 				done:    false
 			});
 			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
-			this.$.newTodo.setValue(""); // clear the input field
 		},
-		inputChange: function(inSender,inEvent) {
+		inputChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"content": inSender.getValue()}); // update the content attribute in the model at index
 		},
-		doneChange: function(inSender,inEvent) {
+		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
 		}
 	});
