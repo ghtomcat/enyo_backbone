@@ -6,13 +6,13 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<!-- -->
-	<!--<script src="../enyo-2.0b5/enyo-2.0b5/enyo.js" type="text/javascript"></script>-->
-	<!--<script src="../enyo-2.0b5/lib/onyx/package.js" type="text/javascript"></script>-->
-	<!--<script src="../enyo-2.0b5/lib/layout/package.js" type="text/javascript"></script>-->
+	<script src="../enyo-2.0b5/enyo-2.0b5/enyo.js" type="text/javascript"></script>
+	<script src="../enyo-2.0b5/lib/onyx/package.js" type="text/javascript"></script>
+	<script src="../enyo-2.0b5/lib/layout/package.js" type="text/javascript"></script>
 
-	<script src="../../../../enyojs/enyo/enyo.js" type="text/javascript"></script>
-	<script src="../../../../enyojs/lib/onyx/package.js" type="text/javascript"></script>
-	<script src="../../../../enyojs/lib/layout/package.js" type="text/javascript"></script>
+	<!--<script src="../../../../enyojs/enyo/enyo.js" type="text/javascript"></script>-->
+	<!--<script src="../../../../enyojs/lib/onyx/package.js" type="text/javascript"></script>-->
+	<!--<script src="../../../../enyojs/lib/layout/package.js" type="text/javascript"></script>-->
 
 	<script src="dist/underscore.js" type="text/javascript"></script>
 	<script src="dist/backbone.js" type="text/javascript"></script>
@@ -89,7 +89,8 @@
 					{kind: "Repeater", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
 						{name: "item", classes: "item", components: [
 							{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
-							{kind:"onyx.Input", name: "input", onchange: "inputChange"}
+							{kind:"onyx.Input", name: "input", onchange: "inputChange"},
+							{kind: "onyx.IconButton", src: "assets/toolbar-icon-delete.png", ontap: "deleteItem"}
 						]}
 					]}
 				]}
@@ -131,6 +132,12 @@
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
+		},
+		deleteItem: function(inSender, inEvent) {
+			var model = Todos.at(inEvent.index);
+			model.destroy();
+			Todos.remove(model);
+			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
 		}
 	});
 
