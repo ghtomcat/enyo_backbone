@@ -81,8 +81,8 @@
 					{kind: "onyx.InputDecorator", components: [
     					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"},
   					]},
-					{kind: "Scroller", fit: true, components: [
-        				{kind: "Repeater", name: "todoList", count: 10, onSetupItem: "setupItem", components: [
+					{kind: "Scroller", components: [
+        				{kind: "Repeater", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
             				{name: "item", classes: "item", components: [
             					{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
                 				{kind:"onyx.Input", name: "input", onchange: "inputChange"}
@@ -92,16 +92,10 @@
     				
 				]},
 			],
-			create: function() {
-				Todos.fetch(); // fetch needs to be called before anyone can access the data ... is there a better place than here?
-				enyo.log(JSON.stringify(Todos));
-
-				this.inherited(arguments);
-
-			},
 			rendered: function() {
+			    Todos.fetch();
+			    this.$.todoList.setCount(Todos.length);
 				this.inherited(arguments);
-
 				//enyo.log(Todos.done().length); // example how to call collection functions
       			//enyo.log(Todos.remaining().length); // example how to call collection functions
 
@@ -119,11 +113,14 @@
   				}
   			},
 			addTodo: function() {
+			    if(!this.$.newTodo.getValue()) {
+			      return; // empty string
+			    }
 				Todos.create({ // create new model and add to collection
-        			content: this.$.newTodo.hasNode().value,
+        			content: this.$.newTodo.getValue(),
         			done:    false
       			});
-      			this.$.todoList.setCount(10); // setCount refreshes the Repeater
+      			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
       			this.$.newTodo.setValue(""); // clear the input field
       		},
       		inputChange: function(inSender,inEvent) {
