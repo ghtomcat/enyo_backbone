@@ -6,9 +6,9 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<!-- -->
-	<script src="../enyo-2.0b5/enyo-2.0b5/enyo.js" type="text/javascript"></script>
-	<script src="../enyo-2.0b5/lib/onyx/package.js" type="text/javascript"></script>
-	<script src="../enyo-2.0b5/lib/layout/package.js" type="text/javascript"></script>
+	<script src="../enyo-2.0/enyo-2.0/enyo.js" type="text/javascript"></script>
+	<script src="../enyo-2.0/lib/onyx/package.js" type="text/javascript"></script>
+	<script src="../enyo-2.0/lib/layout/package.js" type="text/javascript"></script>
 
 	<link rel="stylesheet" href="css/todo.css">
 
@@ -101,6 +101,27 @@
 			]},
 			{name:"footertext", classes: "footer", content:""}
 		],
+
+		clearAll: function(inSender, inEvent){
+			var value = inSender.getValue();
+			var x = this.$.todoList;
+			var z = x.getComponents();
+			for(var i =0;i < z.length; i++){
+				z[i].$.isDone.setValue(value)
+				this.setTextStyle(z[i].$.input, value);
+				Todos.at(i).save({"done": value});
+			}
+			this.refreshRemaining();
+		},
+
+		setTextStyle: function(input, value){
+			if(value)
+				input.applyStyle("text-decoration", "line-through");
+			else
+				input.applyStyle("text-decoration", "none");
+
+		},
+
 		rendered: function() {
 			Todos.fetch();
 			this.$.todoList.setCount(Todos.length);
@@ -113,6 +134,7 @@
 			if (Todos.at(inEvent.index)) {
 				inEvent.item.$.input.setValue(Todos.at(inEvent.index).get("content")); // get value from model and update repeater item
 				inEvent.item.$.isDone.setValue(Todos.at(inEvent.index).get("done")); // get value from model and update repeater item
+				this.setTextStyle(inEvent.item.$.input, Todos.at(inEvent.index).get("done"));
 			}
 		},
 		addOnEnter: function(inSender, inEvent) {
@@ -125,6 +147,10 @@
 		refreshRemaining: function() {
 			var remaining=Todos.remaining().length; // example how to call collection functions
 			this.$.footertext.setContent(remaining+" Items left");
+			if(remaining === 0)
+				this.$.clearAll.setValue(true);
+			else
+				this.$.clearAll.setValue(false);
 		},
 		addTodo: function(value) {
 			if(!value) {
@@ -142,6 +168,7 @@
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
+			this.setTextStyle(inEvent.originator.container.children[1], Todos.at(inEvent.index).get("done"));
 			this.refreshRemaining();
 		},
 		deleteItem: function(inSender, inEvent) {
