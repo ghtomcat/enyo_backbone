@@ -23,6 +23,16 @@ body {
 	box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2),
 				0 25px 50px 0 rgba(0, 0, 0, 0.15);
 }
+.app::before {
+	content: '';
+	border-left: 1px solid #F5D6D6;
+	border-right: 1px solid #F5D6D6;
+	width: 2px;
+	position: absolute;
+	top: 0;
+	left: 40px;
+	height: 100%;
+}
 
 .title {
 	font-size: 26px;
@@ -35,9 +45,31 @@ body {
 	text-shadow: 0 -1px 0 #BFBFBF;
 }
 
+.todo-list::before {
+	content: '';
+	position: absolute;
+	top: 49px;
+	right: 0;
+	left: 0;
+	height: 15px;
+	z-index: 2;
+	border-bottom: 1px solid #6C615C;
+	background: #8D7D77;
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(132, 110, 100, 0.8)),to(rgba(101, 84, 76, 0.8)));
+	background: -webkit-linear-gradient(top, rgba(132, 110, 100, 0.8), rgba(101, 84, 76, 0.8));
+	background: -moz-linear-gradient(top, rgba(132, 110, 100, 0.8), rgba(101, 84, 76, 0.8));
+	background: -o-linear-gradient(top, rgba(132, 110, 100, 0.8), rgba(101, 84, 76, 0.8));
+	background: -ms-linear-gradient(top, rgba(132, 110, 100, 0.8), rgba(101, 84, 76, 0.8));
+	background: linear-gradient(top, rgba(132, 110, 100, 0.8), rgba(101, 84, 76, 0.8));
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#9d8b83', EndColorStr='#847670');
+	border-top-left-radius: 1px;
+	border-top-right-radius: 1px;
+}
+
 .todo-new {
 	font-size: 20px;
 	padding-left: 5px;
+	padding-top: 15px;
 	background: rgba(0, 0, 0, 0.02);
 	box-shadow: none;
     border-bottom: 1px dotted #CCC;
@@ -55,7 +87,7 @@ body {
 	*/
 }
 
-.toggle-all:before {
+.toggle-all::before {
 	/*
 	content: '»';
 	font-size: 28px;
@@ -65,14 +97,14 @@ body {
 }
 
 .todo-new-input {
-	margin-left: 5px;
-	padding-left: 5px;
+	margin-left: 8px;
+	padding-left: 8px;
 	color: #4D4D4D;
 	border: none;
 	font-size: 24px;
 	line-height: 43px;
 	background: rgba(0, 0, 0, 0.02);
-	width: 92%;
+	width: 85%;
 }
 
 .item {
@@ -84,8 +116,8 @@ body {
 }
 
 .item-input {
-	margin-left: 5px;
-	padding-left: 5px;
+	margin-left: 8px;
+	padding-left: 8px;
 	color: #4D4D4D;
 	border: none;
 	font-size: 24px;
@@ -94,25 +126,25 @@ body {
 }
 
 .footer {
-	color: #777;
-	padding: 0 15px;
-	position: relative;
-	right: 0;
-	bottom: -31px;
-	left: 0;
-	z-index: 1;
-	height: 43px;
-	text-align: center;
+color: #777;
+padding: 0 15px;
+position: absolute;
+right: 0;
+bottom: -31px;
+left: 0;
+height: 20px;
+z-index: -1;
+text-align: center;
 }
 
-.footer:before {
-	content: '';
-	position: absolute;
-	right: 0;
-	bottom: 31px;
-	left: 0;
-	height: 50px;
-	z-index: -1;
+.footer::before {
+content: '';
+position: absolute;
+right: 0;
+bottom: 31px;
+left: 0;
+height: 50px;
+z-index: -2;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3),
 				0 6px 0 -3px rgba(255, 255, 255, 0.8),
 				0 7px 1px -3px rgba(0, 0, 0, 0.3),
