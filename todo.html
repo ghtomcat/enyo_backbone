@@ -10,6 +10,8 @@
 	<script src="../enyo-2.0b5/lib/onyx/package.js" type="text/javascript"></script>
 	<script src="../enyo-2.0b5/lib/layout/package.js" type="text/javascript"></script>
 
+	<link rel="stylesheet" href="css/todo.css">
+
 	<!--<script src="../../../../enyojs/enyo/enyo.js" type="text/javascript"></script>-->
 	<!--<script src="../../../../enyojs/lib/onyx/package.js" type="text/javascript"></script>-->
 	<!--<script src="../../../../enyojs/lib/layout/package.js" type="text/javascript"></script>-->
@@ -77,23 +79,25 @@
 
 	enyo.kind({
 		name: "App",
+		classes: "app",
 		components: [
 			{kind: "FittableRows", components: [
 				{kind: "onyx.Toolbar", components: [
 					{content: "Todos"}
 				]},
-				{kind: "onyx.InputDecorator", components: [
+				{kind: "onyx.InputDecorator", classes: "todo-new", components: [
 					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
 				]},
 				{kind: "Scroller", components: [
-					{kind: "Repeater", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
+					{kind: "Repeater", classes: "todo-list", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
 						{name: "item", classes: "item", components: [
 							{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
 							{kind:"onyx.Input", name: "input", onchange: "inputChange"},
 							{kind: "onyx.IconButton", src: "assets/toolbar-icon-delete.png", ontap: "deleteItem"}
 						]}
 					]}
-				]}
+				]},
+				{name:"footer",classes: "footer", content:""}
 			]}
 		],
 		rendered: function() {
@@ -101,8 +105,8 @@
 			this.$.todoList.setCount(Todos.length);
 			this.inherited(arguments);
 			//enyo.log(Todos.done().length); // example how to call collection functions
-					//enyo.log(Todos.remaining().length); // example how to call collection functions
-
+			this.refreshRemaining();
+			
 		},
 		setupItem: function(inSender, inEvent) {
 			if (Todos.at(inEvent.index)) {
@@ -116,6 +120,10 @@
 				inSender.setValue(""); // clear the input field
 				return true;
 			}
+		},
+		refreshRemaining: function() {
+			var remaining=Todos.remaining().length; // example how to call collection functions
+			this.$.footer.setContent(remaining+" Items left");
 		},
 		addTodo: function(value) {
 			if(!value) {
@@ -132,6 +140,8 @@
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
+			var remaining=Todos.remaining().length;
+			this.$.footer.setContent(remaining+" Items left");
 		},
 		deleteItem: function(inSender, inEvent) {
 			var model = Todos.at(inEvent.index);
