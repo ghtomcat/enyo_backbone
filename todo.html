@@ -85,19 +85,22 @@
 				{kind: "onyx.Toolbar", components: [
 					{content: "Todos"}
 				]},
-				{kind: "onyx.InputDecorator", classes: "todo-new", components: [
-					{kind: "onyx.Input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
+				{ classes: "todo-new", components: [
+				    {kind:"onyx.Checkbox", classes: "toggle-all", name:"clearAll", onchange: "clearAll"},
+					{kind: "onyx.Input", classes: "todo-new-input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
 				]},
-				{kind: "Scroller", components: [
+				//{kind: "Scroller", components: [
 					{kind: "Repeater", classes: "todo-list", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
 						{name: "item", classes: "item", components: [
-							{kind:"onyx.Checkbox", name:"isDone", onchange: "doneChange"},
-							{kind:"onyx.Input", name: "input", onchange: "inputChange"},
-							{kind: "onyx.IconButton", src: "assets/toolbar-icon-delete.png", ontap: "deleteItem"}
+							{kind:"onyx.Checkbox", classes: "item-checkbox", name:"isDone", onchange: "doneChange"},
+							{kind:"onyx.Input", classes: "item-input", name: "input", onchange: "inputChange"},
+							{kind: "onyx.IconButton", classes: "item-delete", src: "assets/toolbar-icon-delete.png", ontap: "deleteItem"}
 						]}
-					]}
-				]},
-				{name:"footer",classes: "footer", content:""}
+					]},
+				//]},
+			]},
+			{name:"footer",classes: "footer", components: [
+				{name:"footertext", style:"padding-top: 22px", content:""}
 			]}
 		],
 		rendered: function() {
@@ -123,7 +126,7 @@
 		},
 		refreshRemaining: function() {
 			var remaining=Todos.remaining().length; // example how to call collection functions
-			this.$.footer.setContent(remaining+" Items left");
+			this.$.footertext.setContent(remaining+" Items left");
 		},
 		addTodo: function(value) {
 			if(!value) {
@@ -140,8 +143,6 @@
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
-			var remaining=Todos.remaining().length;
-			this.$.footer.setContent(remaining+" Items left");
 		},
 		deleteItem: function(inSender, inEvent) {
 			var model = Todos.at(inEvent.index);
