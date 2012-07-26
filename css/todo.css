@@ -24,6 +24,10 @@ body {
 				0 25px 50px 0 rgba(0, 0, 0, 0.15);
 }
 
+.title {
+	font-size: 26px;
+}
+
 .todo-list {
 	line-height: 43px;
 	font-size: 20px;

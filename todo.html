@@ -82,11 +82,11 @@
 		classes: "app",
 		components: [
 			{kind: "FittableRows", components: [
-				{kind: "onyx.Toolbar", components: [
+				{kind: "onyx.Toolbar", classes: "title", components: [
 					{content: "Todos"}
 				]},
 				{ classes: "todo-new", components: [
-				    {kind:"onyx.Checkbox", classes: "toggle-all", name:"clearAll", onchange: "clearAll"},
+				    {kind:"onyx.Checkbox", classes: "toggle-all", name:"clearAll", onchange: "clearAll"}, // checkbox to toggle all todo checkboxes
 					{kind: "onyx.Input", classes: "todo-new-input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
 				]},
 				//{kind: "Scroller", components: [
@@ -137,18 +137,21 @@
 				done:    false
 			});
 			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
+			this.refreshRemaining();
 		},
 		inputChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"content": inSender.getValue()}); // update the content attribute in the model at index
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
+			this.refreshRemaining();
 		},
 		deleteItem: function(inSender, inEvent) {
 			var model = Todos.at(inEvent.index);
 			model.destroy();
 			Todos.remove(model);
 			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
+			this.refreshRemaining();
 		}
 	});
 
