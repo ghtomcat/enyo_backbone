@@ -95,7 +95,11 @@
 					]},
 				//]},
 			]},
-			{name:"footertext", classes: "footer", content:""}
+			{name:"footer",classes:"footer", components: [
+				{name:"todocount", classes: "todo-count", content:""},
+				{name:"filters",content: "All Active Completed"},
+				{name:"clearcompleted",classes:"clear-completed", tag:"button",content:""}
+			]}
 		],
 
 		clearAll: function(inSender, inEvent){
@@ -111,20 +115,20 @@
 		},
 
 		setTextStyle: function(input, value){
-			if(value)
+			if(value) {
 				input.applyStyle("text-decoration", "line-through");
-			else
+				input.applyStyle("color", "#777");
+			} else {
 				input.applyStyle("text-decoration", "none");
-
+				input.applyStyle("color", "#4D4D4D");
+			}
 		},
 
 		rendered: function() {
 			Todos.fetch();
 			this.$.todoList.setCount(Todos.length);
 			this.inherited(arguments);
-			//enyo.log(Todos.done().length); // example how to call collection functions
 			this.refreshRemaining();
-			
 		},
 		setupItem: function(inSender, inEvent) {
 			if (Todos.at(inEvent.index)) {
@@ -142,11 +146,21 @@
 		},
 		refreshRemaining: function() {
 			var remaining=Todos.remaining().length; // example how to call collection functions
-			this.$.footertext.setContent(remaining+" Items left");
-			if(remaining === 0)
+			var count=Todos.pluralize(remaining);
+			this.$.todocount.setContent(remaining+" "+count+" left");
+			if(remaining === 0) {
 				this.$.clearAll.setValue(true);
-			else
+			} else {
 				this.$.clearAll.setValue(false);
+			}
+			var done=Todos.done().length;
+			if (done>0) {
+				this.$.clearcompleted.setContent("Clear completed ("+done+")");
+				this.$.clearcompleted.show();
+			} else {
+				this.$.clearcompleted.hide();
+			}
+
 		},
 		addTodo: function(value) {
 			if(!value) {
