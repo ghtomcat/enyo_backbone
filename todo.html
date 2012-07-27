@@ -97,8 +97,8 @@
 			]},
 			{name:"footer",classes:"footer", components: [
 				{name:"todocount", classes: "todo-count", content:""},
-				{name:"filters",content: "All Active Completed"},
-				{name:"clearcompleted",classes:"clear-completed", tag:"button",content:""}
+				{name:"filters", content: "All Active Completed"},
+				{name:"clearcompleted",classes:"clear-completed", tag:"button", content:"", ontap: "clearCompleted"}
 			]}
 		],
 
@@ -113,7 +113,11 @@
 			}
 			this.refreshRemaining();
 		},
-
+		clearCompleted: function(inSender, inEvent) {
+			_.each(Todos.done(), function(todo) { todo.destroy(); } );
+			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
+			this.refreshRemaining();
+		},
 		setTextStyle: function(input, value){
 			if(value) {
 				input.applyStyle("text-decoration", "line-through");
