@@ -120,11 +120,13 @@
 		},
 		setTextStyle: function(input, value){
 			if(value) {
-				input.applyStyle("text-decoration", "line-through");
-				input.applyStyle("color", "#777");
+				input.addClass("completed");
+				//input.applyStyle("text-decoration", "line-through");
+				//input.applyStyle("color", "#777");
 			} else {
-				input.applyStyle("text-decoration", "none");
-				input.applyStyle("color", "#4D4D4D");
+				input.removeClass("completed");
+				//input.applyStyle("text-decoration", "none");
+				//input.applyStyle("color", "#4D4D4D");
 			}
 		},
 
@@ -157,6 +159,7 @@
 			} else {
 				this.$.clearAll.setValue(false);
 			}
+			// hide or show&update clear completed button
 			var done=Todos.done().length;
 			if (done>0) {
 				this.$.clearcompleted.setContent("Clear completed ("+done+")");
@@ -179,6 +182,7 @@
 		},
 		inputChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"content": inSender.getValue()}); // update the content attribute in the model at index
+			inEvent.originator.hasNode().blur() // remove focus from input field;
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index

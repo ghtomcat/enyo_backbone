@@ -129,6 +129,11 @@ body {
 	width: 84%;
 }
 
+.item-input.completed {
+	text-decoration: line-through;
+	color: darkGray;
+}
+
 .footer {
 	color: #777;
 	padding: 0 15px;
