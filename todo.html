@@ -154,7 +154,7 @@
 			var remaining=Todos.remaining().length; // example how to call collection functions
 			var count=Todos.pluralize(remaining);
 			this.$.todocount.setContent(remaining+" "+count+" left");
-			if(remaining === 0) {
+			if(remaining === 0 && Todos.length > 0) {
 				this.$.clearAll.setValue(true);
 			} else {
 				this.$.clearAll.setValue(false);
