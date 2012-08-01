@@ -96,11 +96,38 @@
 				//]},
 			]},
 			{name:"footer",classes:"footer", components: [
+				
 				{name:"todocount", classes: "todo-count", content:""},
-				{name:"filters", content: "All Active Completed"},
+				{name:"allFilters", classes: "filters", tag: "label", content: "All", ontap: "showAll"},
+				{name:"activeFilters", classes: "filters", tag: "label", content: "Active", ontap: "showActive"},
+				{name:"completeFilters", classes: "filters", tag: "label", content: "Completed", ontap: "showCompleted"},
 				{name:"clearcompleted",classes:"clear-completed", tag:"button", content:"", ontap: "clearCompleted"}
 			]}
 		],
+
+		showAll: function(inSender, inEvent){
+			var all = this.$.todoList.getComponents();
+			for(var i =0;i < all.length; i++)
+				all[i].children[0].show();	
+		},
+
+		showActive: function(inSender, inEvent){
+			var all = this.$.todoList.getComponents();
+			for(var i =0;i < all.length; i++)
+				if(!Todos.at(i).get("done"))
+					all[i].children[0].show();
+				else
+					all[i].children[0].hide();
+		},
+
+		showCompleted: function(inSender, inEvent){
+			var all = this.$.todoList.getComponents();
+			for(var i =0;i < all.length; i++)
+				if(Todos.at(i).get("done"))
+					all[i].children[0].show();
+				else
+					all[i].children[0].hide();	
+		},
 
 		clearAll: function(inSender, inEvent){
 			var value = inSender.getValue();
@@ -154,7 +181,7 @@
 			var remaining=Todos.remaining().length; // example how to call collection functions
 			var count=Todos.pluralize(remaining);
 			this.$.todocount.setContent(remaining+" "+count+" left");
-			if(remaining === 0) {
+			if(remaining === 0 && Todos.length > 0) {
 				this.$.clearAll.setValue(true);
 			} else {
 				this.$.clearAll.setValue(false);
@@ -187,6 +214,10 @@
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
 			this.setTextStyle(inEvent.originator.container.children[1], Todos.at(inEvent.index).get("done"));
+			// if(Todos.at(inEvent.index).get("done"))
+			// 	inEvent.originator.container.hide();
+			// else
+			// 	inEvent.originator.container.show();
 			this.refreshRemaining();
 		},
 		deleteItem: function(inSender, inEvent) {
