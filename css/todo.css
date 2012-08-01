@@ -166,10 +166,17 @@ body {
 	text-align: left;
 }
 
+.filters {
+	position: center;
+	border-radius: 3px;
+	background: rgba(0, 0, 0, 0.15);
+	box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.3);
+}
+
 .clear-completed {
 	float: right;
-	position: relative;
-	margin-top: -20px;
+	position: right;
+	margin-top: 0px;
 	line-height: 20px;
 	text-decoration: none;
 	background: rgba(0, 0, 0, 0.1);
