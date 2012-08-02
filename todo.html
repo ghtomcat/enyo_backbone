@@ -82,7 +82,7 @@
 					{content: "Todos"}
 				]},
 				{ classes: "todo-new", components: [
-				    {kind:"onyx.Checkbox", classes: "toggle-all", name:"clearAll", onchange: "clearAll"}, // checkbox to toggle all todo checkboxes
+				    {kind:"onyx.Checkbox", classes: "toggle-all", name:"clearAll", onchange: "clearAll"}, 
 					{kind: "onyx.Input", classes: "todo-new-input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
 				]},
 				{kind: "Repeater", classes: "todo-list", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
@@ -137,23 +137,30 @@
 			}
 		},
 		refreshRemaining: function() {
-			var remaining=Todos.remaining().length; // example how to call collection functions
-			var count=Todos.pluralize(remaining);
-			this.$.todocount.setContent(remaining+" "+count+" left");
-			if(remaining === 0 && Todos.length > 0) {
-				this.$.clearAll.setValue(true);
+			if (Todos.length===0) {
+				this.$.todoList.hide();
+				this.$.footer.hide();
 			} else {
-				this.$.clearAll.setValue(false);
-			}
-			// hide or show&update clear completed button
-			var done=Todos.done().length;
-			if (done>0) {
-				this.$.clearcompleted.setContent("Clear completed ("+done+")");
-				this.$.clearcompleted.show();
-			} else {
-				this.$.clearcompleted.hide();
-			}
+				this.$.todoList.show();
+				this.$.footer.show();
 
+				var remaining=Todos.remaining().length; // example how to call collection functions
+				var count=Todos.pluralize(remaining);
+				this.$.todocount.setContent(remaining+" "+count+" left");
+				if(remaining === 0) {
+					this.$.clearAll.setValue(true);
+				} else {
+					this.$.clearAll.setValue(false);
+				}
+				// hide or show&update clear completed button
+				var done=Todos.done().length;
+				if (done>0) {
+					this.$.clearcompleted.setContent("Clear completed ("+done+")");
+					this.$.clearcompleted.show();
+				} else {
+					this.$.clearcompleted.hide();
+				}
+			}
 		},
 		addTodo: function(value) {
 			if(!value) {
@@ -164,6 +171,7 @@
 				done:    false
 			});
 			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
+			this.$.newTodo.hasNode().blur() // remove focus from input field
 			this.refreshRemaining();
 		},
 		inputChange: function(inSender, inEvent) {

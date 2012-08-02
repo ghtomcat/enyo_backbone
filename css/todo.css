@@ -1,4 +1,4 @@
-body {
+﻿body {
 	font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	line-height: 1.4em;
     background: #eaeaea;
@@ -45,7 +45,7 @@ body {
 	text-shadow: 0 -1px 0 #BFBFBF;
 }
 
-.todo-list::before {
+.todo-new::before {
 	content: '';
 	position: absolute;
 	top: 49px;
