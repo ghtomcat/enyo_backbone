@@ -85,15 +85,13 @@
 				    {kind:"onyx.Checkbox", classes: "toggle-all", name:"clearAll", onchange: "clearAll"}, // checkbox to toggle all todo checkboxes
 					{kind: "onyx.Input", classes: "todo-new-input", name: "newTodo", placeholder: "What needs to be done?", onkeydown: "addOnEnter"}
 				]},
-				//{kind: "Scroller", components: [
-					{kind: "Repeater", classes: "todo-list", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
+				{kind: "Repeater", classes: "todo-list", name: "todoList", count: 0, onSetupItem: "setupItem", components: [
 						{name: "item", classes: "item", components: [
 							{kind:"onyx.Checkbox", classes: "item-checkbox", name:"isDone", onchange: "doneChange"},
 							{kind:"onyx.Input", classes: "item-input", name: "input", onchange: "inputChange"},
 							{kind: "onyx.IconButton", classes: "item-delete", src: "assets/toolbar-icon-delete.png", ontap: "deleteItem"}
 						]}
 					]},
-				//]},
 			]},
 			{name:"footer",classes:"footer", components: [
 				{name:"todocount", classes: "todo-count", content:""},
@@ -104,13 +102,10 @@
 
 		clearAll: function(inSender, inEvent){
 			var value = inSender.getValue();
-			var x = this.$.todoList;
-			var z = x.getComponents();
-			for(var i =0;i < z.length; i++){
-				z[i].$.isDone.setValue(value)
-				this.setTextStyle(z[i].$.input, value);
+			for ( i = 0, l = Todos.length; i < l; i++ ) {
 				Todos.at(i).save({"done": value});
 			}
+			this.$.todoList.setCount(Todos.length);
 			this.refreshRemaining();
 		},
 		clearCompleted: function(inSender, inEvent) {
@@ -118,14 +113,6 @@
 			this.$.todoList.setCount(Todos.length); // setCount refreshes the Repeater
 			this.refreshRemaining();
 		},
-		setTextStyle: function(input, value){
-			if(value) {
-				input.addClass("completed");
-			} else {
-				input.removeClass("completed");
-			}
-		},
-
 		rendered: function() {
 			Todos.fetch();
 			this.$.todoList.setCount(Todos.length);
@@ -136,8 +123,11 @@
 			if (Todos.at(inEvent.index)) {
 				inEvent.item.$.input.setValue(Todos.at(inEvent.index).get("content")); // get value from model and update repeater item
 				inEvent.item.$.isDone.setValue(Todos.at(inEvent.index).get("done")); // get value from model and update repeater item
-				this.setTextStyle(inEvent.item.$.input, Todos.at(inEvent.index).get("done"));
+				// update classes
+				inEvent.item.$.input.addRemoveClass("completed", Todos.at(inEvent.index).get("done"));
+				inEvent.item.$.isDone.addRemoveClass("checked", Todos.at(inEvent.index).get("done"));
 			}
+			return true;
 		},
 		addOnEnter: function(inSender, inEvent) {
 			if (inEvent.keyCode === 13) {
@@ -150,7 +140,7 @@
 			var remaining=Todos.remaining().length; // example how to call collection functions
 			var count=Todos.pluralize(remaining);
 			this.$.todocount.setContent(remaining+" "+count+" left");
-			if(remaining === 0) {
+			if(remaining === 0 && Todos.length > 0) {
 				this.$.clearAll.setValue(true);
 			} else {
 				this.$.clearAll.setValue(false);
@@ -182,7 +172,7 @@
 		},
 		doneChange: function(inSender, inEvent) {
 			Todos.at(inEvent.index).save({"done": !Todos.at(inEvent.index).get("done")}); // toggle the done attribute in the model at index
-			this.setTextStyle(inEvent.originator.container.children[1], Todos.at(inEvent.index).get("done"));
+			this.$.todoList.renderRow(inEvent.index);
 			this.refreshRemaining();
 		},
 		deleteItem: function(inSender, inEvent) {
